@@ -58,10 +58,10 @@ def compare_sizes(sizes_1, sizes_2):
 
 if __name__ == "__main__":
 
-    ts1 = datetime.now()
-
     files     = get_files(argv[1])
     time_wait = int(argv[2])
+
+    print(f"TRACKING {len(files)} files over {time_wait} seconds")
     
     sizes_1 = get_sizes(files)
     sleep(time_wait)
@@ -69,8 +69,19 @@ if __name__ == "__main__":
 
     diffs = compare_sizes(sizes_1, sizes_2)
 
+    print("Files whose sizes have changed:")
+
+    avg_rate = 0
+    n_rate   = 0
     for key in diffs:
         elt = diffs[key]
 
         if elt["ds"] != 0:
-            print(f"{key}: {elt['rate']}, {elt['ds']}")
+            rate      = elt["rate"]
+            avg_rate += rate
+            n_rate   += 1
+
+            print(f"{key}: {rate}, {elt['ds']}")
+
+    avg_rate /= n_rate
+    print(f"AVERAGE rate-of-change for {n_rate} files: {avg_rate/1024/1024} MB/s")
