@@ -2,12 +2,30 @@
 # -*- coding: utf-8 -*-
 
 
-from os       import walk
-from os.path  import join
-from sys      import argv
-from time     import sleep
-from pathlib  import Path
-from datetime import datetime
+from os          import walk
+from os.path     import join
+from sys         import argv
+from time        import sleep
+from pathlib     import Path
+from datetime    import datetime
+from dataclasses import dataclass
+
+
+
+@dataclass
+class FileStats:
+    path: str
+    size: int
+    time: datetime
+
+
+
+@dataclass
+class FileStatDiff:
+    path: str
+    ds:   int
+    dt:   float
+    rate: float
 
 
 
@@ -30,8 +48,9 @@ def get_sizes(files):
 
     stats = dict()
     for cfile in files:
-        stats[cfile] = dict(size = Path(cfile).stat().st_size,
-                            time = datetime.now())
+        stats[cfile] = FileStats(path = cfile, 
+                                 size = Path(cfile).stat().st_size,
+                                 time = datetime.now())
 
     return stats
 
@@ -42,15 +61,16 @@ def compare_sizes(sizes_1, sizes_2):
     diffs = dict()
     for key in sizes_1:
 
-        size_1 = sizes_1[key]["size"]
-        ts_1   = sizes_1[key]["time"]
-        size_2 = sizes_2[key]["size"]
-        ts_2   = sizes_2[key]["time"]
+        size_1 = sizes_1[key].size
+        ts_1   = sizes_1[key].time
+        size_2 = sizes_2[key].size
+        ts_2   = sizes_2[key].time
 
         ds = size_2 - size_1
         dt = (ts_2 - ts_1).total_seconds()
 
-        diffs[key] = dict(ds = ds, dt = dt, rate = ds/dt)
+        diffs[key] = FileStatDiff(path = key, ds = ds, dt = dt, rate = ds/dt)
+
 
     return diffs
 
@@ -76,12 +96,14 @@ if __name__ == "__main__":
     for key in diffs:
         elt = diffs[key]
 
-        if elt["ds"] != 0:
-            rate      = elt["rate"]
+        if elt.ds != 0:
+            rate      = elt.rate
             avg_rate += rate
             n_rate   += 1
 
-            print(f"{key}: {rate}, {elt['ds']}")
+            print(f"{key}: {rate}, {elt.ds}")
 
-    avg_rate /= n_rate
+    if n_rate > 0:
+        avg_rate /= n_rate
+
     print(f"AVERAGE rate-of-change for {n_rate} files: {avg_rate/1024/1024} MB/s")
