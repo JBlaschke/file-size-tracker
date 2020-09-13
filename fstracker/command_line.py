@@ -38,4 +38,4 @@ def run(root_dir, time_wait):
         avg_rate /= n_rate
 
     print(f"AVERAGE rate-of-change for {n_rate} files: {avg_rate/1024/1024} MB/s")
-    print(f"       => TOTAL change for {n_rate} files: {avg_rate/1024/1024*n_rate} MB/s")
+    print(f"=>TOTAL rate-of-change for {n_rate} files: {avg_rate/1024/1024*n_rate} MB/s")
