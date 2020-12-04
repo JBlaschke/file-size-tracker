@@ -3,4 +3,4 @@
 
 
 from .track        import FileStats, FileStatDiff, get_files, get_sizes, compare_sizes
-from .command_line import run
+from .command_line import run, log
