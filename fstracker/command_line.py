@@ -54,7 +54,7 @@ def log(root_dir, time_wait, out="fs.log"):
 
     while True:
         files = get_files(root_dir)
-      
+
         sizes_1 = get_sizes(files)
         sleep(time_wait)
         sizes_2 = get_sizes(files)
@@ -75,4 +75,16 @@ def log(root_dir, time_wait, out="fs.log"):
             avg_rate /= n_rate
 
         with open(out, "a") as f:
-            f.write(f"[{datetime.now()}] {n_rate} {avg_rate} {time_wait}\n")
+            f.write(f"[{datetime.now()}] {n_rate} {avg_rate} {time_wait}")
+
+        for key in diffs:
+            elt = diffs[key]
+
+            if elt.ds != 0:
+                rate = elt.rate
+
+                with open(out, "a") as f:
+                    f.write(f" {rate}")
+
+        with open(out, "a") as f:
+            f.write(f"\n")
